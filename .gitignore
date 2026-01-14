@@ -1,0 +1,11 @@
+# OS junk
+.DS_Store
+
+# Video assets (Hosted on Archive.org now)
+*.mp4
+*.mov
+*.avi
+*.mkv
+
+# Ignore the assets folder locally if it contains large files
+assets/
