@@ -8,4 +8,4 @@
 *.mkv
 
 # Ignore the assets folder locally if it contains large files
-assets/
+assets/videos
