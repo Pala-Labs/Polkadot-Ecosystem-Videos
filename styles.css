@@ -207,10 +207,6 @@ body.dark-mode .moon-icon {
     width: 72px;
 }
 
-body:not(.mobile) .sidebar {
-    transform: translateX(0);
-}
-
 .sidebar-nav {
     display: flex;
     flex-direction: column;
