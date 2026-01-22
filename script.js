@@ -12,10 +12,6 @@ const elements = {
     mediaGrid: document.getElementById('mediaGrid'),
     emptyState: document.getElementById('emptyState'),
     searchInput: document.getElementById('searchInput'),
-    mobileSearchInput: document.getElementById('mobileSearchInput'),
-    searchToggleBtn: document.getElementById('searchToggleBtn'),
-    mobileSearchExpanded: document.getElementById('mobileSearchExpanded'),
-    sidebarOverlay: document.getElementById('sidebarOverlay'),
     navLinks: document.querySelectorAll('.nav-link'),
     contentTitle: document.getElementById('contentTitle'),
     menuBtn: document.getElementById('menuBtn'),
@@ -610,9 +606,7 @@ function toggleSidebar() {
 
     if (isMobile) {
         // On mobile, toggle the 'active' class to slide in/out
-        const isActive = elements.sidebar.classList.toggle('active');
-        elements.sidebarOverlay.classList.toggle('active', isActive);
-        document.body.style.overflow = isActive ? 'hidden' : '';
+        elements.sidebar.classList.toggle('active');
     } else {
         // On desktop, toggle the 'collapsed' class to shrink/expand
         elements.sidebar.classList.toggle('collapsed');
@@ -621,25 +615,6 @@ function toggleSidebar() {
         const isCollapsed = elements.sidebar.classList.contains('collapsed');
         localStorage.setItem('sidebarCollapsed', isCollapsed);
     }
-}
-
-// Close sidebar (mobile)
-function closeSidebar() {
-    elements.sidebar.classList.remove('active');
-    elements.sidebarOverlay.classList.remove('active');
-    document.body.style.overflow = '';
-}
-
-// Mobile Search Toggle
-function toggleMobileSearch() {
-    const isActive = elements.mobileSearchExpanded.classList.toggle('active');
-    if (isActive) {
-        elements.mobileSearchInput.focus();
-    }
-}
-
-function closeMobileSearch() {
-    elements.mobileSearchExpanded.classList.remove('active');
 }
 
 // Initialize Sidebar State
@@ -662,8 +637,14 @@ function setupEventListeners() {
     // Menu button (toggles sidebar on both desktop and mobile)
     elements.menuBtn.addEventListener('click', toggleSidebar);
 
-    // Close sidebar when clicking overlay (mobile)
-    elements.sidebarOverlay.addEventListener('click', closeSidebar);
+    // Close sidebar when clicking outside (mobile)
+    document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 1024) {
+            if (!elements.sidebar.contains(e.target) && !elements.menuBtn.contains(e.target)) {
+                elements.sidebar.classList.remove('active');
+            }
+        }
+    });
 
     // Navigation
     elements.navLinks.forEach(link => {
@@ -671,40 +652,14 @@ function setupEventListeners() {
             e.preventDefault();
             setFilter(link.dataset.filter);
             if (window.innerWidth <= 1024) {
-                closeSidebar();
+                elements.sidebar.classList.remove('active');
             }
         });
     });
 
-    // Mobile search toggle
-    elements.searchToggleBtn.addEventListener('click', toggleMobileSearch);
-
-    // Close mobile search when clicking outside
-    document.addEventListener('click', (e) => {
-        if (elements.mobileSearchExpanded.classList.contains('active')) {
-            if (!elements.mobileSearchExpanded.contains(e.target) &&
-                !elements.searchToggleBtn.contains(e.target)) {
-                closeMobileSearch();
-            }
-        }
-    });
-
-    // Search (desktop)
+    // Search
     elements.searchInput.addEventListener('input', (e) => {
         handleSearch(e.target.value);
-        // Sync with mobile search
-        if (elements.mobileSearchInput) {
-            elements.mobileSearchInput.value = e.target.value;
-        }
-    });
-
-    // Search (mobile)
-    elements.mobileSearchInput.addEventListener('input', (e) => {
-        handleSearch(e.target.value);
-        // Sync with desktop search
-        if (elements.searchInput) {
-            elements.searchInput.value = e.target.value;
-        }
     });
 
     // Modal close
@@ -746,26 +701,6 @@ function setupEventListeners() {
             closeVideoModal();
             closeLightbox();
             closeContributeModal();
-            closeSidebar();
-            closeMobileSearch();
         }
-    });
-
-    // Handle window resize - clean up mobile states
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            if (window.innerWidth > 1024) {
-                // Desktop: close mobile sidebar and overlay
-                elements.sidebar.classList.remove('active');
-                elements.sidebarOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            }
-            if (window.innerWidth > 768) {
-                // Hide mobile search on larger screens
-                closeMobileSearch();
-            }
-        }, 100);
     });
 }
