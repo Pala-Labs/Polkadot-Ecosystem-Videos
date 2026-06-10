@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polkadot Ecosystem Media Archive</title>
-    <meta name="description" content="Public videos and images from the Polkadot ecosystem, funded by Polkadot OpenGov">
+    <title>Polkadot Public Library</title>
+    <meta name="description" content="Public videos from the Polkadot ecosystem, funded by Polkadot OpenGov">
     <link rel="icon" type="image/svg+xml" href="assets/polkadot-brand-assets/dark.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -25,7 +25,7 @@
                 </button>
                 <div class="logo">
                     <img src="assets/polkadot-brand-assets/light.svg" alt="Polkadot" class="logo-img" id="logoImg">
-                    <h1>Polkadot Ecosystem Content</h1>
+                    <h1>Polkadot Public Library</h1>
                 </div>
             </div>
 
@@ -34,7 +34,7 @@
                     <circle cx="11" cy="11" r="8"></circle>
                     <path d="m21 21-4.35-4.35"></path>
                 </svg>
-                <input type="text" class="search-input" id="searchInput" placeholder="Search videos and images...">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search videos...">
             </div>
 
             <button class="theme-btn" id="themeBtn" aria-label="Toggle theme">
@@ -77,14 +77,6 @@
                         <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
                     </svg>
                     <span>Videos</span>
-                </a>
-                <a href="#" class="nav-link" data-filter="image" title="Images">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                        <polyline points="21 15 16 10 5 21"></polyline>
-                    </svg>
-                    <span>Images</span>
                 </a>
             </nav>
 
@@ -220,31 +212,6 @@
         </div>
     </div>
 
-    <!-- Image Lightbox -->
-    <div class="lightbox" id="lightbox">
-        <div class="lightbox-backdrop" id="lightboxBackdrop"></div>
-        <button class="lightbox-close" id="lightboxClose" aria-label="Close">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-        </button>
-        <div class="lightbox-content">
-            <img src="" alt="" id="lightboxImg">
-            <div class="lightbox-info">
-                <h3 id="lightboxTitle"></h3>
-                <a href="#" class="btn btn-primary" id="lightboxDownload" download>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download
-                </a>
-            </div>
-        </div>
-    </div>
-
     <!-- Contribution Modal -->
     <div class="modal" id="contributeModal">
         <div class="modal-backdrop" id="contributeBackdrop"></div>
@@ -258,7 +225,7 @@
             <div class="modal-body">
                 <h3 style="margin-bottom: 16px; font-size: 24px;">Contribute Content</h3>
                 <p style="margin-bottom: 24px; color: var(--text-secondary);">
-                    Have videos or images from the Polkadot ecosystem to share? Send us your content details and we'll add them to the archive.
+                    Have videos from the Polkadot ecosystem to share? Send us your content details and we'll add them to the library.
                 </p>
                 <form id="contributeForm" class="contribute-form">
                     <div class="form-group">
@@ -274,8 +241,6 @@
                         <select id="contentType" name="contentType" required>
                             <option value="">Select type...</option>
                             <option value="video">Video</option>
-                            <option value="image">Image</option>
-                            <option value="both">Both Videos & Images</option>
                         </select>
                     </div>
                     <div class="form-group">

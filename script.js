@@ -21,9 +21,6 @@ const elements = {
     videoModal: document.getElementById('videoModal'),
     modalClose: document.getElementById('modalClose'),
     modalBackdrop: document.getElementById('modalBackdrop'),
-    lightbox: document.getElementById('lightbox'),
-    lightboxClose: document.getElementById('lightboxClose'),
-    lightboxBackdrop: document.getElementById('lightboxBackdrop'),
     selectModeBtn: document.getElementById('selectModeBtn'),
     selectionToolbar: document.getElementById('selectionToolbar'),
     selectionCount: document.getElementById('selectionCount'),
@@ -96,7 +93,6 @@ async function loadMedia() {
 // Update Resource Count Cards
 function updateResourceCounts() {
     const videosCount = allMedia.filter(item => item.type === 'video').length;
-    const imagesCount = allMedia.filter(item => item.type === 'image').length;
 
     elements.resourceCounts.innerHTML = `
         <div class="resource-count-card">
@@ -106,15 +102,6 @@ function updateResourceCounts() {
             </svg>
             <span class="resource-count-label">Videos</span>
             <span class="resource-count-number">${videosCount}</span>
-        </div>
-        <div class="resource-count-card">
-            <svg class="resource-count-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                <polyline points="21 15 16 10 5 21"></polyline>
-            </svg>
-            <span class="resource-count-label">Images</span>
-            <span class="resource-count-number">${imagesCount}</span>
         </div>
     `;
 }
@@ -192,36 +179,25 @@ function sortMedia(media) {
 // Create Media Card
 function createMediaCard(item) {
     const card = document.createElement('div');
-    card.className = `media-card ${item.type === 'image' ? 'image-card' : ''} ${selectMode ? 'select-mode' : ''}`;
+    card.className = `media-card ${selectMode ? 'select-mode' : ''}`;
     card.dataset.itemId = item.id;
 
-    let mediaUrl, thumbnailUrl;
+    const mediaUrl = item.source === 'local'
+        ? item.url
+        : `https://archive.org/download/${item.archiveId}/${encodeURIComponent(item.filename)}`;
 
-    if (item.source === 'local') {
-        mediaUrl = item.url;
-        thumbnailUrl = item.url;
-    } else {
-        mediaUrl = `https://archive.org/download/${item.archiveId}/${encodeURIComponent(item.filename)}`;
-        thumbnailUrl = mediaUrl;
-    }
-
-    let thumbnailHTML = '';
-    if (item.type === 'video') {
-        thumbnailHTML = `
-            <video preload="metadata" muted>
-                <source src="${mediaUrl}#t=0.1" type="video/mp4">
-            </video>
-            <div class="media-overlay">
-                <div class="play-icon">
-                    <svg viewBox="0 0 24 24">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                </div>
+    const thumbnailHTML = `
+        <video preload="metadata" muted>
+            <source src="${mediaUrl}#t=0.1" type="video/mp4">
+        </video>
+        <div class="media-overlay">
+            <div class="play-icon">
+                <svg viewBox="0 0 24 24">
+                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                </svg>
             </div>
-        `;
-    } else {
-        thumbnailHTML = `<img src="${thumbnailUrl}" alt="${item.title}" loading="lazy">`;
-    }
+        </div>
+    `;
 
     const isSelected = selectedItems.has(item.id);
 
@@ -239,12 +215,9 @@ function createMediaCard(item) {
             <div class="media-meta">
                 <span class="media-badge">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        ${item.type === 'video' ?
-                            '<polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>' :
-                            '<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline>'
-                        }
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
                     </svg>
-                    ${item.type === 'video' ? (item.duration || 'Video') : 'Image'}
+                    ${item.duration || 'Video'}
                 </span>
                 <span>${item.source === 'local' ? 'Local' : 'Archive.org'}</span>
             </div>
@@ -263,11 +236,7 @@ function createMediaCard(item) {
         if (selectMode) {
             toggleSelection(item.id);
         } else {
-            if (item.type === 'video') {
-                openVideoModal(item);
-            } else {
-                openLightbox(item);
-            }
+            openVideoModal(item);
         }
     });
 
@@ -484,32 +453,6 @@ function closeVideoModal() {
     document.body.style.overflow = '';
 }
 
-// Image Lightbox
-function openLightbox(item) {
-    const lightboxImg = document.getElementById('lightboxImg');
-    const lightboxTitle = document.getElementById('lightboxTitle');
-    const lightboxDownload = document.getElementById('lightboxDownload');
-
-    const imageUrl = item.source === 'local'
-        ? item.url
-        : `https://archive.org/download/${item.archiveId}/${encodeURIComponent(item.filename)}`;
-
-    lightboxImg.src = imageUrl;
-    lightboxImg.alt = item.title;
-    lightboxTitle.textContent = item.title;
-    lightboxDownload.href = imageUrl;
-    lightboxDownload.download = item.filename || item.title;
-
-    elements.lightbox.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-    elements.lightbox.classList.remove('active');
-    document.getElementById('lightboxImg').src = '';
-    document.body.style.overflow = '';
-}
-
 // Filter Handling
 function setFilter(filter) {
     currentFilter = filter;
@@ -523,8 +466,7 @@ function setFilter(filter) {
 
     const titles = {
         'all': 'All Content',
-        'video': 'Videos',
-        'image': 'Images'
+        'video': 'Videos'
     };
     elements.contentTitle.textContent = titles[filter] || 'All Content';
 
@@ -589,7 +531,7 @@ Description: ${description}
 ${link ? `Link: ${link}` : ''}
 
 ---
-This submission was sent from the Polkadot Ecosystem Content website.`);
+This submission was sent from the Polkadot Public Library website.`);
 
     const mailtoLink = `mailto:insights@palalabs.org?subject=${subject}&body=${body}`;
 
@@ -666,10 +608,6 @@ function setupEventListeners() {
     elements.modalClose.addEventListener('click', closeVideoModal);
     elements.modalBackdrop.addEventListener('click', closeVideoModal);
 
-    // Lightbox close
-    elements.lightboxClose.addEventListener('click', closeLightbox);
-    elements.lightboxBackdrop.addEventListener('click', closeLightbox);
-
     // Selection mode
     elements.selectModeBtn.addEventListener('click', toggleSelectMode);
     elements.downloadSelectedBtn.addEventListener('click', downloadSelected);
@@ -699,7 +637,6 @@ function setupEventListeners() {
                 toggleSelectMode();
             }
             closeVideoModal();
-            closeLightbox();
             closeContributeModal();
         }
     });
